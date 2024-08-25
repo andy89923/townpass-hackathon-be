@@ -1,6 +1,10 @@
-username: postgres
-password: "0000"
-network: tcp
-host: "127.0.0.1"
-port: 5432  
-dbName: postgres
+database:
+  username: postgres
+  password: "0000"
+  network: tcp
+  host: "127.0.0.1"
+  port: 5432  
+  dbName: postgres
+
+server:
+  port: 8080
