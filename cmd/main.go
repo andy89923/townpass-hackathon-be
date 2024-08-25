@@ -3,19 +3,25 @@ package main
 import (
 	"fmt"
 
+	"gorm.io/driver/postgres" 
+	"gorm.io/gorm"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/spf13/viper"
+
+	"go-cleanarch/pkg/domain"
+	"go-cleanarch/internal/router"
 )
 
 type Config struct {
-	Username string `mapstructure:"Username"`
-	Password string `mapstructure:"Password"`
-	Network string `mapstructure:"Network"`
-	Server string `mapstructure:"Server"`
-	Port int `mapstructure:"Port"`
-	Name string `mapstructure:"Name"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	Network string `mapstructure:"network"`
+	Host string `mapstructure:"host"`
+	Port int `mapstructure:"port"`
+	DbName string `mapstructure:"dbName"`
 }
 
 func initLogger() *zap.Logger {
@@ -39,6 +45,27 @@ func initLogger() *zap.Logger {
 
 	logger.Info("Logger initialized")
 	return logger
+}
+
+func initDB(cfg Config, logger *zap.Logger) (*gorm.DB) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d ", cfg.Host, cfg.Username, cfg.Password, cfg.DbName, cfg.Port)
+	
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		logger.Error("Error connecting to database", zap.Error(err))
+		panic(err)
+	}
+	logger.Info("Database connected successfully")
+
+	// Migrate the schema
+	if err := db.AutoMigrate(&domain.LostItem{}); err != nil {
+		logger.Error("Error migrating schema", zap.Error(err))
+		panic(err)
+	}
+	logger.Info("Database schema migrated successfully")
+
+	return db
 }
 
 func readConfig(config *Config, path string) {
@@ -67,19 +94,15 @@ func readConfig(config *Config, path string) {
 }
 
 func main() {
-	readConfig(&Config{}, "")
+	var config Config
+	readConfig(&config, "")
 	logger := initLogger()
 
 	//initialize database
-
-	//initialize service
-
-	//initialize repository
+	_ = initDB(config, logger)
 	
-	//initialize contoller
 
-	//initialize router
-
+	router.NewRouter(logger).Run(":8080")
 	logger.Info("Starting application")
-	// router.NewRouter().Run(":8080")
+	
 }
