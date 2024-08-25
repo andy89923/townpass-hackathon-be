@@ -1,31 +1,27 @@
 package domain
 
-import (
-	"time"
-)
 
 type LostItem struct {
-    ID        uint `gorm:"primaryKey"`
-    LostTime time.Time
-    Kind      string
-    PropertyName string
-    Location   string
-    PhoneNumber string
+    LostTime string `json:"lost_time" form:"lost_time"`
+    Kind      string `json:"kind" form:"kind"`
+    PropertyName string `json:"property_name" form:"property_name"`
+    Location   string `json:"location" form:"location"`
+    PhoneNumber string `json:"phone_number" form:"phone_number"`
 }
 
 type LostItemRepository interface {
-    // Create(todo *Todo) (*Todo, error)
-	// GetAll() ([]*Todo, error)
-	// GetByID(id uint) (*Todo, error)
-	// Update(todo *Todo) (*Todo, error)
-	// Delete(id uint) error
+    Create(LostItem *LostItem) (*LostItem, error)
+    // GetAll() ([]*LostItem, error)
+    // GetByID(id uint) (*LostItem, error)
+    // Update(LostItem *LostItem) (*LostItem, error)
+    // Delete(id uint) error
 }
 
 type LostItemService interface {
-    // AddNewTodo(*Todo) (*Todo, error)
-    // GetAllTodos() ([]*Todo, error)
-    // GetTodoById(id uint) (*Todo, error)
-    // UpdateTodo(todo *Todo) (*Todo, error)
-    // DeleteTodo(id uint) error
+    AddNewLostItem(lostItem *LostItem) (*LostItem, error)
+    // GetAllLostItems() ([]*LostItem, error)
+    // GetLostItemById(id uint) (*LostItem, error)
+    // UpdateLostItem(LostItem *LostItem) (*LostItem, error)
+    // DeleteLostItem(id uint) error
 }
 

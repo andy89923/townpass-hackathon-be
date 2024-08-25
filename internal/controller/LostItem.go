@@ -21,6 +21,7 @@ func NewLostItemController(lostItemService *service.LostItemService) *LostItemCo
 }
 
 func (lic *LostItemController) PostOne(c *gin.Context) {
+	
 	var lostItem domain.LostItem
 	err := c.ShouldBindJSON(&lostItem)
 	if err != nil {
@@ -28,15 +29,26 @@ func (lic *LostItemController) PostOne(c *gin.Context) {
 		return
 	}
 
-	// -------------- call service --------------
-	// newLostItem, err := lic.lostItemService.AddNewLostItem(&lostItem)
-	// if err != nil {
+	newLostItem, err := lic.lostItemService.AddNewLostItem(&lostItem)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, newLostItem)
+}
+
+func (lic *LostItemController) GetAll(c *gin.Context) {
+	// todos, err := lic.todoService.GetAllTodos()
+	// if errors.Is(err, domain.ErrNotFound) {
+	// 	c.Status(http.StatusNotFound)
+	// 	return
+	// } else if err != nil {
 	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	// 	return
 	// }
 
-	// c.JSON(http.StatusCreated, newLostItem)
+	// c.JSON(http.StatusOK, todos)
 
 	c.Status(http.StatusNotImplemented)
 }
-

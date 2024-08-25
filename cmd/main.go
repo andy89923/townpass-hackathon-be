@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/viper"
 
 	"go-cleanarch/pkg/domain"
+	"go-cleanarch/internal/repository"
+	"go-cleanarch/internal/service"
 	"go-cleanarch/internal/router"
 )
 
@@ -99,10 +101,16 @@ func main() {
 	logger := initLogger()
 
 	//initialize database
-	_ = initDB(config, logger)
-	
+	db := initDB(config, logger)
+	lostItemRepository := repository.NewPostgresLostItemRepository(db)
 
-	router.NewRouter(logger).Run(":8080")
+	lostItemService := service.NewLostItemService(lostItemRepository)
+	services := service.AppService{
+		LostItemService: lostItemService,
+	}
+	//initialize router
+
+
+	router.NewRouter(logger, services).Run(":8080")
 	logger.Info("Starting application")
-	
 }
