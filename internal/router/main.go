@@ -17,8 +17,7 @@ func NewRouter(logger *zap.Logger,  services service.AppService) *gin.Engine {
 		})
 	})
 
-	lostItemController := controller.NewLostItemController(services.LostItemService)
-
+	lostItemController := controller.NewLostItemController(services.LostItemService, logger)
 	addLostItemGroup(router, logger, lostItemController)
 
 	return router

@@ -102,9 +102,9 @@ func main() {
 
 	//initialize database
 	db := initDB(config, logger)
-	lostItemRepository := repository.NewPostgresLostItemRepository(db)
+	lostItemRepository := repository.NewPostgresLostItemRepository(db, logger)
 
-	lostItemService := service.NewLostItemService(lostItemRepository)
+	lostItemService := service.NewLostItemService(lostItemRepository, logger)
 	services := service.AppService{
 		LostItemService: lostItemService,
 	}

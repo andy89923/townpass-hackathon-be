@@ -1,31 +1,34 @@
 package controller
 
 import (
-	// "errors"
 	"go-cleanarch/internal/service"
 	"go-cleanarch/pkg/domain"
 	"net/http"
-	// "strconv"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type LostItemController struct {
 	lostItemService *service.LostItemService
+	logger 		*zap.Logger
 }
 
-func NewLostItemController(lostItemService *service.LostItemService) *LostItemController {
+func NewLostItemController(lostItemService *service.LostItemService, logger *zap.Logger) *LostItemController {
 	return &LostItemController{
 		lostItemService: lostItemService,
+		logger: logger,
 	}
 }
 
 func (lic *LostItemController) PostOne(c *gin.Context) {
-	
+	lic.logger.Debug("PostOne")
+
 	var lostItem domain.LostItem
 	err := c.ShouldBindJSON(&lostItem)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		lic.logger.Error("PostOne", zap.Error(err))
+		c.Status(http.StatusBadRequest)
 		return
 	}
 

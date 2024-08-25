@@ -4,6 +4,8 @@ import (
 
 	"gorm.io/gorm"
 	"go-cleanarch/pkg/domain"
+
+	"go.uber.org/zap"
 )
 
 type LostItem struct {
@@ -19,10 +21,14 @@ type LostItem struct {
 
 type postgresLostItemRepository struct {
 	db *gorm.DB
+	logger *zap.Logger
 }
 
-func NewPostgresLostItemRepository(db *gorm.DB) domain.LostItemRepository {
-	return &postgresLostItemRepository{db: db}
+func NewPostgresLostItemRepository(db *gorm.DB, logger *zap.Logger) domain.LostItemRepository {
+	return &postgresLostItemRepository{
+		db: db,
+		logger: logger,
+	}
 }
 
 func (r *postgresLostItemRepository) Create(lostItem *domain.LostItem) (*domain.LostItem, error) {

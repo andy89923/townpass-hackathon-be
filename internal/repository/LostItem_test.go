@@ -8,7 +8,9 @@ import (
 
 	"gorm.io/gorm"
 	"gorm.io/driver/sqlite"
+	"go.uber.org/zap"
 	"go-cleanarch/pkg/domain"
+
 )
 
 type  LostItemRepoSuite struct {
@@ -17,7 +19,11 @@ type  LostItemRepoSuite struct {
 	repo domain.LostItemRepository
 }
 
+
+
 func (suite *LostItemRepoSuite) SetupSuite() {
+	logger, _ := zap.NewDevelopment()
+
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
 		suite.T().Fatal(err)
@@ -27,7 +33,7 @@ func (suite *LostItemRepoSuite) SetupSuite() {
 
 	db.AutoMigrate(&LostItem{})
 	suite.db = db
-	suite.repo = NewPostgresLostItemRepository(db) //let the interface hold the repository object
+	suite.repo = NewPostgresLostItemRepository(db, logger) //let the interface hold the repository object
 }
 
 func  TestLostItemRepoSuite(t *testing.T) {
