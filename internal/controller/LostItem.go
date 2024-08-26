@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"errors"
+	"strconv"
+
 	"go-cleanarch/internal/service"
 	"go-cleanarch/pkg/domain"
 	"net/http"
@@ -42,16 +45,67 @@ func (lic *LostItemController) PostOne(c *gin.Context) {
 }
 
 func (lic *LostItemController) GetAll(c *gin.Context) {
-	// todos, err := lic.todoService.GetAllTodos()
-	// if errors.Is(err, domain.ErrNotFound) {
-	// 	c.Status(http.StatusNotFound)
-	// 	return
-	// } else if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	lostItems, err := lic.lostItemService.GetAllLostItems()
+	
+	if errors.Is(err, domain.ErrNotFound) {
+		c.Status(http.StatusNotFound)
+		return
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	// c.JSON(http.StatusOK, todos)
+	c.JSON(http.StatusOK, lostItems)
+}
 
-	c.Status(http.StatusNotImplemented)
+func (lic *LostItemController) GetOne(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	lostItem, err := lic.lostItemService.GetLostItemById(uint(id))
+	if errors.Is(err, domain.ErrNotFound) {
+		c.Status(http.StatusNotFound)
+		return
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, lostItem)
+}
+
+func (lic *LostItemController) UpdateOne(c *gin.Context) {
+	var lostItem domain.LostItem
+	err := c.ShouldBindJSON(&lostItem)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = lic.lostItemService.UpdateLostItem(&lostItem)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (lic *LostItemController) DeleteOne(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = lic.lostItemService.DeleteLostItem(uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

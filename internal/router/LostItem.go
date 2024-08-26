@@ -12,6 +12,9 @@ func addLostItemGroup(router *gin.Engine, logger *zap.Logger, lostItemController
 	{
 		LostItemGroup.GET("", lostItemController.GetAll)
 		LostItemGroup.POST("", lostItemController.PostOne)
+		LostItemGroup.GET("/:id", lostItemController.GetOne)
+		LostItemGroup.PATCH("/:id", lostItemController.UpdateOne)
+		LostItemGroup.DELETE("/:id", lostItemController.DeleteOne)
 	}
 	logger.Info("LostItem router Group added")
 }

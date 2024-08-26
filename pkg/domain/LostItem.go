@@ -20,9 +20,9 @@ type LostItemRepository interface {
 
 type LostItemService interface {
     AddNewLostItem(lostItem *LostItem) (*LostItem, error)
-    // GetAllLostItems() ([]*LostItem, error)
-    // GetLostItemById(id uint) (*LostItem, error)
-    // UpdateLostItem(LostItem *LostItem) (*LostItem, error)
-    // DeleteLostItem(id uint) error
+    GetAllLostItems() ([]*LostItem, error)
+    GetLostItemById(id uint) (*LostItem, error)
+    UpdateLostItem(LostItem *LostItem) (*LostItem, error)
+    DeleteLostItem(id uint) error
 }
 
