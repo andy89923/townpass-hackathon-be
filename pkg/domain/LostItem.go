@@ -2,6 +2,7 @@ package domain
 
 
 type LostItem struct {
+    Id       uint   `json:"id" form:"id"`
     LostTime string `json:"lost_time" form:"lost_time"`
     Kind      string `json:"kind" form:"kind"`
     PropertyName string `json:"property_name" form:"property_name"`
@@ -11,10 +12,10 @@ type LostItem struct {
 
 type LostItemRepository interface {
     Create(LostItem *LostItem) (*LostItem, error)
-    // GetAll() ([]*LostItem, error)
-    // GetByID(id uint) (*LostItem, error)
-    // Update(LostItem *LostItem) (*LostItem, error)
-    // Delete(id uint) error
+    GetAll() ([]*LostItem, error)
+    GetByID(id uint) (*LostItem, error)
+    Update(LostItem *LostItem) error
+    Delete(id uint) error
 }
 
 type LostItemService interface {

@@ -60,3 +60,123 @@ func (suite *LostItemRepoSuite) TestCreate() {
 	assert.Equal(suite.T(), lostItem.Location, createdLostItem.Location)
 	assert.Equal(suite.T(), lostItem.PhoneNumber, createdLostItem.PhoneNumber)
 }
+
+func (suite *LostItemRepoSuite) TestGetAll() {
+	lostItems := []domain.LostItem{
+		{
+			LostTime: "2021-01-01",
+			Kind: "Phone",
+			PropertyName: "Samsung Galaxy S21",
+			Location: "Dining Room",
+			PhoneNumber: "081234567890",
+		},
+		{
+			LostTime: "2021-01-02",
+			Kind: "Wallet",
+			PropertyName: "Leather Wallet",
+			Location: "Living Room",
+			PhoneNumber: "081234567891",
+		},
+	}
+
+	for _, lostItem := range lostItems {
+		_, err := suite.repo.Create(&lostItem)
+		assert.Nil(suite.T(), err)
+	}
+
+	allLostItems, err := suite.repo.GetAll()
+	assert.Nil(suite.T(), err)
+	assert.NotNil(suite.T(), allLostItems)
+	assert.Equal(suite.T(), len(lostItems), len(allLostItems))
+	
+	for i, lostItem := range lostItems {
+		assert.Equal(suite.T(), lostItem.LostTime, allLostItems[i].LostTime)
+		assert.Equal(suite.T(), lostItem.Kind, allLostItems[i].Kind)
+		assert.Equal(suite.T(), lostItem.PropertyName, allLostItems[i].PropertyName)
+		assert.Equal(suite.T(), lostItem.Location, allLostItems[i].Location)
+		assert.Equal(suite.T(), lostItem.PhoneNumber, allLostItems[i].PhoneNumber)
+	}
+}
+
+func (suite *LostItemRepoSuite) TestGetByID() {
+	lostItem := domain.LostItem{
+		LostTime: "2021-01-01",
+		Kind: "Phone",
+		PropertyName: "Samsung Galaxy S21",
+		Location: "Dining Room",
+		PhoneNumber: "081234567890",
+	}
+
+	createdLostItem, err := suite.repo.Create(&lostItem)
+	assert.Nil(suite.T(), err)
+
+	Id := createdLostItem.Id
+	suite.T().Log("ID: ", Id)
+	foundLostItem, err := suite.repo.GetByID(Id)
+
+	assert.Nil(suite.T(), err)
+	assert.NotNil(suite.T(), foundLostItem)
+	assert.Equal(suite.T(), lostItem.LostTime, foundLostItem.LostTime)
+	assert.Equal(suite.T(), lostItem.Kind, foundLostItem.Kind)
+	assert.Equal(suite.T(), lostItem.PropertyName, foundLostItem.PropertyName)
+	assert.Equal(suite.T(), lostItem.Location, foundLostItem.Location)
+	assert.Equal(suite.T(), lostItem.PhoneNumber, foundLostItem.PhoneNumber)
+}
+
+func (suite *LostItemRepoSuite) TestUpdate() {
+	lostItem := domain.LostItem{
+		LostTime: "2021-01-01",
+		Kind: "Phone",
+		PropertyName: "Samsung Galaxy S21",
+		Location: "Dining Room",
+		PhoneNumber: "081234567890",
+	}
+
+	createdLostItem, err := suite.repo.Create(&lostItem)
+	assert.Nil(suite.T(), err)
+
+	Id := createdLostItem.Id
+	suite.T().Log("ID: ", Id)
+
+	updatedLostItem := domain.LostItem{
+		Id: Id,
+		LostTime: "2021-01-02",
+		Kind: "Wallet",
+		PropertyName: "Leather Wallet",
+		Location: "Living Room",
+		PhoneNumber: "081234567891",
+	}
+	updatedLostItemCopy := updatedLostItem
+
+	updateErr := suite.repo.Update(&updatedLostItem)
+	assert.Nil(suite.T(), updateErr)
+	assert.Nil(suite.T(), updateErr)
+	assert.Equal(suite.T(), updatedLostItemCopy.LostTime, updatedLostItem.LostTime)
+	assert.Equal(suite.T(), updatedLostItemCopy.Kind, updatedLostItem.Kind)
+	assert.Equal(suite.T(), updatedLostItemCopy.PropertyName, updatedLostItem.PropertyName)
+	assert.Equal(suite.T(), updatedLostItemCopy.Location, updatedLostItem.Location)	
+	assert.Equal(suite.T(), updatedLostItemCopy.PhoneNumber, updatedLostItem.PhoneNumber)
+}
+
+func (suite *LostItemRepoSuite) TestDelete() {
+	lostItem := domain.LostItem{
+		LostTime: "2021-01-01",
+		Kind: "Phone",
+		PropertyName: "Samsung Galaxy S21",
+		Location: "Dining Room",
+		PhoneNumber: "081234567890",
+	}
+
+	createdLostItem, err := suite.repo.Create(&lostItem)
+	assert.Nil(suite.T(), err)
+
+	Id := createdLostItem.Id
+	suite.T().Log("ID: ", Id)
+
+	deleteErr := suite.repo.Delete(Id)
+	assert.Nil(suite.T(), deleteErr)
+
+	_, err = suite.repo.GetByID(Id)
+	assert.NotNil(suite.T(), err)
+	assert.Equal(suite.T(), domain.ErrNotFound, err)
+}
