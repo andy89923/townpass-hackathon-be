@@ -10,15 +10,15 @@ import (
 )
 
 type TempleLocList struct {
-	templeId     int    `gorm:"column:temple_id"`
-	templeName   string `gorm:"column:temple_name"`
-	loc          string `gorm:"column:loc"`
-	mainDeity    int    `gorm:"column:main_deity"`
-	history      string `gorm:"column:history"`
-	worshipOrder string `gorm:"column:worship_order"`
-	inCharge     string `gorm:"column:in_charge"`
-	linkRef      string `gorm:"column:link_ref"`
-	numsOfSubId  int    `gorm:"column:nums_of_sub_id"`
+	TempleId     int
+	TempleName   string
+	Loc          string
+	MainDeity    int
+	History      string
+	WorshipOrder string
+	InCharge     string
+	LinkRef      string
+	NumsOfSubId  int
 }
 
 func (l *TempleLocList) TableName() string {
@@ -41,20 +41,20 @@ func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocLis
 func (r *postgresLocListRepository) GetNameByLocation(locationId int) (name string, err error) {
 	var temple TempleLocList
 
-	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
+	err = r.db.Where(&TempleLocList{TempleId: locationId}).Find(&temple).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", domain.ErrNotFound
 	}
 
-	return temple.templeName, nil
+	return temple.TempleName, nil
 }
 
 func (r *postgresLocListRepository) GetNumOfSubLocByLocId(locId int) int {
 	var templeList []TempleLocList
 	r.db.Find(&templeList)
 	for _, subLoc := range templeList {
-		if subLoc.templeId == locId {
-			return subLoc.numsOfSubId
+		if subLoc.TempleId == locId {
+			return subLoc.NumsOfSubId
 		}
 	}
 	return -1
@@ -63,7 +63,7 @@ func (r *postgresLocListRepository) GetNumOfSubLocByLocId(locId int) int {
 func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
 	var temple TempleLocList
 
-	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
+	err = r.db.Where(&TempleLocList{TempleId: locationId}).Find(&temple).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}

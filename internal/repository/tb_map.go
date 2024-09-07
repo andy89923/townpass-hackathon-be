@@ -9,8 +9,8 @@ import (
 )
 
 type TbMap struct {
-	locationId int    `gorm:"column:location_id"`
-	tbName     string `gorm:"column:tb_name"`
+	LocationId int
+	TbName     string
 }
 
 func (l *TbMap) TableName() string {

@@ -10,11 +10,11 @@ import (
 )
 
 type SubLocList struct {
-	templeId    int    `gorm:"column:temple_id"`
-	templeName  string `gorm:"column:temple_name"`
-	subTempleId string `gorm:"column:sub_temple_id"`
-	deity       string `gorm:"column:deity"`
-	description string `gorm:"column:description"`
+	TempleId    int
+	TempleName  string
+	SubTempleId string
+	Deity       string
+	Description string
 }
 
 func (s *SubLocList)TableName() string{

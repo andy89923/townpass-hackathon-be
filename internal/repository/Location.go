@@ -12,9 +12,9 @@ import (
 type LocationTable struct {
 	gorm.Model
 
-	MM          domain.MajorMinor `gorm:"column:item_id"`
-	location    int               `gorm:"column:loc_id"`
-	subLocation int               `gorm:"column:sub_loc_id"`
+	ItemId   domain.MajorMinor
+	LocId    int
+	SubLocId int
 }
 
 func (l *LocationTable) TableName() string {
@@ -37,20 +37,20 @@ func NewPostgresLocationRepository(db *gorm.DB, logger *zap.Logger) domain.Locat
 
 func (r *postgresLocationRepository) GetLocationByMM(mm domain.MajorMinor) (locationId int, subLocationId int, err error) {
 	var location LocationTable
-	result := r.db.Where(&LocationTable{MM: mm}).Find(&location)
+	result := r.db.Where(&LocationTable{ItemId: mm}).Find(&location)
 	err = result.Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, 0, domain.ErrNotFound
 	}
 
-	return location.location, location.subLocation, nil
+	return location.LocId, location.SubLocId, nil
 }
 
 func (r *postgresLocationRepository) Create(location *domain.Location, locationId int, subLocationId int) error {
 	locationModel := LocationTable{
-		MM:          location.MajorMinor,
-		location:    locationId,
-		subLocation: subLocationId,
+		ItemId:   location.MajorMinor,
+		LocId:    locationId,
+		SubLocId: subLocationId,
 	}
 
 	result := r.db.Create(&locationModel)
