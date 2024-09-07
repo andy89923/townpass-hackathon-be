@@ -18,6 +18,10 @@ type VisitLog struct {
 	SubLocId int
 }
 
+func (l *VisitLog) TableName() string {
+	return "visit_log"
+}
+
 func NewPostgresVisitLogRepository(db *gorm.DB, logger *zap.Logger) domain.VisitLogRepository {
 	return &postgresVisitLogRepository{
 		db:     db,
@@ -30,10 +34,10 @@ type postgresVisitLogRepository struct {
 	logger *zap.Logger
 }
 
-func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*domain.VisitLog, error ){
+func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*domain.VisitLog, error) {
 	//TODO
 	visitLogModel := VisitLog{
-		UserId:        visitLog.UserId,
+		UserId:   visitLog.UserId,
 		LocId:    visitLog.LocId,
 		SubLocId: visitLog.SubLocId,
 	}
@@ -44,7 +48,7 @@ func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*dom
 	}
 
 	return &domain.VisitLog{
-		UserId:        visitLogModel.UserId,
+		UserId:   visitLogModel.UserId,
 		LocId:    visitLogModel.LocId,
 		SubLocId: visitLogModel.SubLocId,
 	}, nil
