@@ -11,19 +11,19 @@ import (
 	"go.uber.org/zap"
 )
 
-type BadgeController struct {
-	BadgeService *service.BadgeService
-	logger       *zap.Logger
+type LocationController struct {
+	LocationService *service.LocationService
+	logger          *zap.Logger
 }
 
-func NewBadgeController(badgeService *service.BadgeService, logger *zap.Logger) *BadgeController {
-	return &BadgeController{
-		BadgeService: badgeService,
-		logger:       logger,
+func NewBadgeController(locationService *service.LocationService, logger *zap.Logger) *LocationController {
+	return &LocationController{
+		LocationService: locationService,
+		logger:          logger,
 	}
 }
 
-func (bc *BadgeController) GetBadge(c *gin.Context) {
+func (bc *LocationController) GetBadge(c *gin.Context) {
 	bc.logger.Info("enter controller")
 	mm, err := strconv.ParseUint(c.Param("mm"), 10, 32)
 	umm := uint32(mm)
@@ -37,7 +37,7 @@ func (bc *BadgeController) GetBadge(c *gin.Context) {
 		return
 	}
 
-	badge, err := bc.BadgeService.GetBadge(&umm, &id)
+	badge, err := bc.LocationService.GetBadge(umm, id)
 
 	if errors.Is(err, domain.ErrNotFound) {
 		c.Status(http.StatusNotFound)
