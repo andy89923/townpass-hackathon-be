@@ -12,6 +12,8 @@ type Location struct {
 
 	MainBadge Badge      `json:"mainBadge" form:"main_badge"`
 	SubBadge  []SubBadge `json:"subBadges" form:"sub_badge"`
+
+	Details any `json:"info" form:"info"`
 }
 
 type Badge struct {

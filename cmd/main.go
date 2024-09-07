@@ -47,8 +47,11 @@ func main() {
 	subLocListRepository := repository.NewPostgresSubLocListRepository(db, logger)
 	visitLogRepository := repository.NewPostgresVisitLogRepository(db, logger)
 	tbMapRepository := repository.NewPostgresTbMapRepository(db, logger)
+	artLocListRepository := repository.NewPostgresArtLocListRepository(db, logger)
+	artEventRepository := repository.NewPostgresArtEventListRepository(db, logger)
+
 	locationService := service.NewBadgeService(locationRepository,
-		locListRepository, subLocListRepository, visitLogRepository, tbMapRepository, logger)
+		locListRepository, subLocListRepository, visitLogRepository, tbMapRepository, artLocListRepository, artEventRepository, logger)
 
 	services := service.AppService{
 		LocationService: locationService,

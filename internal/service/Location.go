@@ -13,6 +13,8 @@ type LocationService struct {
 	subLocListRepository domain.SubLocListRepository
 	visitLogRepository   domain.VisitLogRepository
 	tbMapRepository      domain.TbMapRepository
+	artLocListRepository domain.ArtLocListRepository
+	artEventRepository   domain.ArtEventRepository
 	logger               *zap.Logger
 }
 
@@ -21,6 +23,8 @@ func NewBadgeService(locationRepository domain.LocationRepository,
 	subLocListRepository domain.SubLocListRepository,
 	visitLogRepository domain.VisitLogRepository,
 	tbMapRepository domain.TbMapRepository,
+	artLocListRepository domain.ArtLocListRepository,
+	artEventRepository domain.ArtEventRepository,
 	logger *zap.Logger) *LocationService {
 	return &LocationService{
 		locationRepository:   locationRepository,
@@ -28,9 +32,16 @@ func NewBadgeService(locationRepository domain.LocationRepository,
 		subLocListRepository: subLocListRepository,
 		visitLogRepository:   visitLogRepository,
 		tbMapRepository:      tbMapRepository,
+		artLocListRepository: artLocListRepository,
 		logger:               logger,
 	}
 }
+
+const (
+	TBMAP_TEMPLE = "temple"
+	TBMAP_ART    = "art"
+	TBMAP_SPORT  = "sport"
+)
 
 func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Location, error) {
 	s.logger.Debug("[Service] GetBadge")
@@ -140,6 +151,26 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 			mainBadge.Aquired = false
 		}
 		resp.MainBadge = mainBadge
+	} else if tableName == TBMAP_ART {
+		event, err := s.artEventRepository.GetEventByMM(mm)
+		if err != nil {
+			s.logger.Debug("[Service] GetBadge GetEventByMM error")
+			return nil, fmt.Errorf("[Service] GetBadge GetEventByMM error: %v", err)
+		}
+
+		location, err := s.artLocListRepository.GetLocationByPlaceId(event.PlaceId)
+		if err != nil {
+			s.logger.Debug("[Service] GetBadge GetLocationByPlaceId error")
+			return nil, fmt.Errorf("[Service] GetBadge GetLocationByPlaceId error: %v", err)
+		}
+
+		location.Details = struct {
+			Event domain.ArtEvent `json:"event" form:"event"`
+		}{
+			Event: event,
+		}
+
+		return &location, nil
 	}
 
 	return &resp, nil
