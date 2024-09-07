@@ -58,9 +58,13 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 			s.logger.Debug("[Service] GetBadge GetNameByLocation error")
 			return nil, fmt.Errorf("[Service] GetBadge GetNameByLocation error: %v", err)
 		}
-
+		visit_log := domain.VisitLog{
+			UserId:   id,
+			LocId:    locationId,
+			SubLocId: sublocationId,
+		}
 		// record current sublocation to visit_log
-		err = s.visitLogRepository.AddVisitLog(mm, id, locationId, sublocationId)
+		_, err = s.visitLogRepository.AddVisitLog(visit_log)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge AddVisitLog error")
 			return nil, fmt.Errorf("[Service] GetBadge AddVisitLog error: %v", err)
