@@ -3,12 +3,13 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
-	"go.uber.org/zap"
 	"go-cleanarch/internal/controller"
 	"go-cleanarch/internal/service"
+
+	"go.uber.org/zap"
 )
 
-func NewRouter(logger *zap.Logger,  services service.AppService) *gin.Engine {
+func NewRouter(logger *zap.Logger, services service.AppService) *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/ping", func(c *gin.Context) {
@@ -17,8 +18,9 @@ func NewRouter(logger *zap.Logger,  services service.AppService) *gin.Engine {
 		})
 	})
 
-	lostItemController := controller.NewLostItemController(services.LostItemService, logger)
-	addLostItemGroup(router, logger, lostItemController)
-
+	// lostItemController := controller.NewLostItemController(services.LostItemService, logger)
+	// addLostItemGroup(router, logger, lostItemController)
+	locationController := controller.NewBadgeController(services.LocationService, logger)
+	addBadgeGroup(router, logger, locationController)
 	return router
 }

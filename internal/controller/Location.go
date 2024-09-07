@@ -25,13 +25,13 @@ func NewBadgeController(locationService *service.LocationService, logger *zap.Lo
 
 func (bc *LocationController) GetBadge(c *gin.Context) {
 	bc.logger.Info("enter controller")
-	mm, err := strconv.ParseUint(c.Param("mm"), 10, 32)
+	mm, err := strconv.ParseUint(c.Query("mm"), 10, 32)
 	umm := domain.MajorMinor(uint32(mm))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
