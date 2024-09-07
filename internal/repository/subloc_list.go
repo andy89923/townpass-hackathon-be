@@ -23,7 +23,7 @@ type postgresSubLocListRepository struct {
 }
 
 
-func NewPostgresSubLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocationRepository {
+func NewPostgresSubLocListRepository(db *gorm.DB, logger *zap.Logger) domain.SubLocListRepository {
 	return &postgresSubLocListRepository{
 		db: db,
 		logger: logger,

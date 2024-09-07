@@ -27,7 +27,7 @@ type postgresLocListRepository struct {
 }
 
 
-func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocationRepository {
+func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocListRepository {
 	return &postgresLocListRepository{
 		db: db,
 		logger: logger,
