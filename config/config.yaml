@@ -1,10 +1,17 @@
 database:
-  username: postgres
-  password: "0000"
+  # username: postgres
+  # password: "0000"
+  # network: tcp
+  # host: "127.0.0.1"
+  # port: 5432  
+  # dbName: postgres
+
+  username: wirelab
+  password: "Bmn543Szvw3ZykoF5wSaegpRrx51HK5C"
   network: tcp
-  host: "127.0.0.1"
+  host: "dpg-cr3k31bqf0us73e9fpng-a.singapore-postgres.render.com"
   port: 5432  
-  dbName: postgres
+  dbName: hackthon_060n
 
 server:
   port: 8080
