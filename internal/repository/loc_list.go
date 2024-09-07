@@ -14,7 +14,7 @@ type TempleLocList struct {
 	TempleId     int
 	TempleName   string
 	Loc          string
-	MainDeity    int
+	MainDeity    string
 	History      string
 	WorshipOrder string
 	InCharge     string
@@ -23,7 +23,7 @@ type TempleLocList struct {
 }
 
 func (l *TempleLocList) TableName() string {
-	return "m_m_list"
+	return "temple_loc_list"
 }
 
 //------------------------------------------------
@@ -69,11 +69,10 @@ func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (ba
 // get the quantity of sublocations in a location
 func (r *postgresLocListRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
 	//TODO
-	var count int64
-	err = r.db.Model(&TempleLocList{}).Where("temple_id = ?", 1).Count(&count).Error
+	var temple TempleLocList
+	err = r.db.Where("temple_id = ?", locationId).First(&temple).Error
 	if err != nil {
 		return 0, err
 	}
-	return int(count), nil
-
+	return temple.NumsOfSubId, nil
 }
