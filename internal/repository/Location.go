@@ -63,20 +63,3 @@ func (r *postgresLocationRepository) Create(location *domain.Location, locationI
 
 	return nil
 }
-
-func (r *postgresLocationRepository) GetNameByLocation(locationId int) (name string, err error) {
-	//TODO
-	
-	return "", nil
-}
-
-func (r *postgresLocationRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
-	//TODO
-	return domain.Badge{}, nil
-}
-
-// get the quantity of sublocations in a location
-func (r *postgresLocationRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
-	//TODO
-	return 0, nil
-}
