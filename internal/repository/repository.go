@@ -23,7 +23,7 @@ func ConnTotDB(logger *zap.Logger) *gorm.DB {
 	logger.Info("Database connected successfully")
 
 	// Migrate the schema LocationTable
-	if err := db.AutoMigrate(&LocationTable{}, &TempleLocList{}, &SubLocList{}); err != nil {
+	if err := db.AutoMigrate(&LocationTable{}, &TempleLocList{}, &SubLocList{}, &VisitLog{}, &TbMap{}); err != nil {
 		logger.Error("Error migrating schema", zap.Error(err))
 		panic(err)
 	}

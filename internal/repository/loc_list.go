@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -24,6 +25,7 @@ type TempleLocList struct {
 func (l *TempleLocList) TableName() string {
 	return "m_m_list"
 }
+
 //------------------------------------------------
 
 type postgresLocListRepository struct {
@@ -45,6 +47,7 @@ func (r *postgresLocListRepository) GetNameByLocation(locationId int) (name stri
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", domain.ErrNotFound
 	}
+	fmt.Println("temple.TempleName: ", temple.TempleName)
 
 	return temple.TempleName, nil
 }
@@ -58,8 +61,8 @@ func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (ba
 	}
 
 	return domain.Badge{
-		IconPath:    "", //TODO
-		Description: "", //TODO
+		IconPath:    fmt.Sprint(locationId) + "_0", //TODO
+		Description: "",                            //TODO
 	}, nil
 }
 

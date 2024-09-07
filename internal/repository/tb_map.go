@@ -10,8 +10,8 @@ import (
 )
 
 type TbMap struct {
-	gorm.Model
-	
+	// gorm.Model
+
 	LocationId int
 	TbName     string
 }

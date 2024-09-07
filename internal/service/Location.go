@@ -37,6 +37,7 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 
 	resp := domain.Location{}
 	resp.MajorMinor = domain.MajorMinor(mm)
+	resp.UserId = id
 
 	// use MM to get locationId, sublocationId
 	locationId, sublocationId, err := s.locationRepository.GetLocationByMM(mm)
@@ -53,7 +54,8 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 	}
 
 	if tableName == "temple" {
-		resp.LocationName, err = s.locListRepository.GetNameByLocation(locationId)
+		resp.Name, err = s.locListRepository.GetNameByLocation(locationId)
+		fmt.Println("resp.LocationName: ", resp.Name)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge GetNameByLocation error")
 			return nil, fmt.Errorf("[Service] GetBadge GetNameByLocation error: %v", err)
@@ -114,7 +116,8 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		resp.SubBadge = respSubBadges
 
 		resp.Progress = countProgress
-		resp.TotalProgress, err = s.locListRepository.GetSubLocQuantity(locationId)
+		resp.NumsOfSubId, err = s.locListRepository.GetSubLocQuantity(locationId)
+		fmt.Print("resp.TotalProgress: ", resp.NumsOfSubId)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge GetNumOfSubLocByLocId error")
 			return nil, fmt.Errorf("[Service] GetBadge GetNumOfSubLocByLocId error: %v", err)
@@ -131,7 +134,7 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 			IconPath:    mainBadgeDB.IconPath,
 			Description: mainBadgeDB.Description,
 		}
-		if resp.Progress == resp.TotalProgress {
+		if resp.Progress == resp.NumsOfSubId {
 			mainBadge.Aquired = true
 		} else {
 			mainBadge.Aquired = false
