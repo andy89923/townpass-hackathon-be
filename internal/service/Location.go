@@ -39,14 +39,6 @@ func (s *BadgeService) GetBadge(mm uint32, id int) (*domain.LostItem, error) {
 		return
 	}
 
-	// get main badge info by locationId
-	resp.MainBadge, err = s.badgeRepository.GetMainBadgeByLocationId(locationId)
-	if err != nil {
-		s.logger.Debug("[Service] GetBadge GetMainBadgeByLocationId error")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	
 	// record current sublocation to visit_log
 	s.badgeRepository.AddVisitLog(mm, locationId, sublocationId)
 	// get all sublocation info by locationId
@@ -87,6 +79,24 @@ func (s *BadgeService) GetBadge(mm uint32, id int) (*domain.LostItem, error) {
 	resp.SubBadges = respSubBadges
 	resp.Progress = countProgress
 	resp.TotalProgress = s.badgeRepository.GetNumOfSubLocByLocId(locationId)
-
+	
+	// get main badge info by locationId
+	mainBadgeDB, err = s.badgeRepository.GetMainBadgeByLocationId(locationId)
+	if err != nil {
+		s.logger.Debug("[Service] GetBadge GetMainBadgeByLocationId error")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var mainBadge domain.Badge{
+		IconPath:    mainBadgeDB.IconPath,
+		Description: mainBadgeDB.Description,
+	}
+	if resp.Progress == resp.TotalProgress {
+		mainBadge.Acquired = true
+	}else{
+		mainBadge.Acquired = false
+	}
+	resp.MainBadge = mainBadge
+	
 	return resp, nil
 }
