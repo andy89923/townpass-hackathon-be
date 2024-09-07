@@ -24,14 +24,14 @@ type postgresTbMapRepository struct {
 	logger *zap.Logger
 }
 
-func NewPostgresTbMApRepository(db *gorm.DB, logger *zap.Logger) domain.TbMapRepository {
+func NewPostgresTbMapRepository(db *gorm.DB, logger *zap.Logger) domain.TbMapRepository {
 	return &postgresTbMapRepository{
 		db:     db,
 		logger: logger,
 	}
 }
 
-func (r *postgresTbMapRepository) GETXXX() error {
+func (r *postgresTbMapRepository) GetTBNameByLocationId() error {
 	//TODO
 	return nil
 }
