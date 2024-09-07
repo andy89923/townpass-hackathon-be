@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"go-cleanarch/internal/controller"
@@ -17,6 +18,8 @@ func NewRouter(logger *zap.Logger, services service.AppService) *gin.Engine {
 			"message": "pong",
 		})
 	})
+
+	router.Use(cors.Default())
 
 	// lostItemController := controller.NewLostItemController(services.LostItemService, logger)
 	// addLostItemGroup(router, logger, lostItemController)
