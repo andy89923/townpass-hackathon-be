@@ -17,6 +17,11 @@ type SubLocList struct {
 	description string `gorm:"column:description"`
 }
 
+func (s *SubLocList)TableName() string{
+	return "temple_subloc_list"
+}
+
+//--------------------------------------
 type postgresSubLocListRepository struct {
 	db *gorm.DB
 	logger *zap.Logger
