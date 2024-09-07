@@ -3,7 +3,7 @@ package domain
 type MajorMinor uint32
 
 type Location struct {
-	MajorMinor uint32 // MajorMinor is a type for major and minor ，which are 4 bytes 
+	MajorMinor MajorMinor // MajorMinor is a type for major and minor ，which are 4 bytes 
 	UserId int `json:"user_id" form:"user_id"`
 	LocationName string `json:"name" form:"name"`
 
@@ -27,6 +27,8 @@ type SubBadge struct {
 
 type LocationRepository interface {
  //TODO
+ 	GetLocationByMM(mm MajorMinor) (locationId int, subLocationId int, err error)
+	Create(location *Location, locationId int, subLocationId int) error
 }
 
 
