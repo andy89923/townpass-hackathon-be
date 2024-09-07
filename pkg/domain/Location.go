@@ -22,8 +22,8 @@ type Badge struct {
 
 type SubBadge struct {
 	Badge
-	SubId          int `json:"subId" form:"sub_id"`
-	subDescription SubTempleDescription
+	SubId int `json:"sub_id" form:"sub_id"`
+	SubDescription SubTempleDescription
 }
 
 type TempleDescription struct {

@@ -47,7 +47,10 @@ func (r *postgresSubLocListRepository) GetSubLocListByLocId(locId int) ([]domain
 			Badge: domain.Badge{
 				IconPath:    fmt.Sprint(locId) + "_" + fmt.Sprint(sub.SubTempleId),                                                //TODO
 			},
-			
+			SubDescription:  domain.SubTempleDescription{
+				Deity:       sub.Deity,
+				Description: sub.Description,
+			},
 		},
 	)
 	}
