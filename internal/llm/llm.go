@@ -9,17 +9,17 @@ import (
 )
 
 const (
-	DefaultModel string = "ollama3.1"
-	LLMBaseURI   string = "http:%+v//localhost:%+v11434"
+	DefaultModel string = "llama3.1"
+	LLMBaseURI   string = "http://127.0.0.1:11434"
 	GENERATEPATH string = "/api/generate"
 	PrePrompt    string = "Give you a json type and with a paragraphs. " +
 		"Try parsing at most attributes as you can, and return json type only\n" +
-		"Json Definition:%+v" +
-		"Paragraphs:%+v"
+		"Json Definition:" + JsonDefinition + "\n" +
+		"Paragraphs: " + "\n Json Type only"
+	JsonDefinition string = "{brand:string(the brand you lost), color:string(the color of the item), Item:string(what item it is)}"
 )
 
 func GetLLMTargetJson(plainText string, targetJson interface{}) error {
-
 	llmReq := LLMRequest{
 		Model:  DefaultModel,
 		Prompt: PrePrompt + plainText,
@@ -34,13 +34,16 @@ func GetLLMTargetJson(plainText string, targetJson interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Error creating request:%+v", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("Error sending request:%+v", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Error status code:%d", resp.StatusCode)
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -57,5 +60,6 @@ func GetLLMTargetJson(plainText string, targetJson interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Unmarshal LLMResponse error:%+v", err)
 	}
+
 	return nil
 }
