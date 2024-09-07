@@ -3,6 +3,7 @@ module go-cleanarch
 go 1.21
 
 require (
+	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
