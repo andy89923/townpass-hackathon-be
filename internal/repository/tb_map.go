@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -9,12 +10,14 @@ import (
 )
 
 type TbMap struct {
+	gorm.Model
+	
 	LocationId int
 	TbName     string
 }
 
 func (l *TbMap) TableName() string {
-	return "m_m_list"
+	return "tbmap"
 }
 
 //------------------------------------------------
@@ -31,7 +34,12 @@ func NewPostgresTbMApRepository(db *gorm.DB, logger *zap.Logger) domain.TbMapRep
 	}
 }
 
-func (r *postgresTbMapRepository) GETXXX() error {
-	//TODO
-	return nil
+func (r *postgresTbMapRepository) GetTableByLocationId(locationId int) (string, error) {
+	var tbMap TbMap
+	result := r.db.Where(&TbMap{LocationId: locationId}).Find(&tbMap)
+	err := result.Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return "", domain.ErrNotFound
+	}
+	return tbMap.TbName, nil
 }

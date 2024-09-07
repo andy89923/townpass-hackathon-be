@@ -4,8 +4,6 @@ package domain
 // "gorm.io/gorm"
 // "go.uber.org/zap"
 
-
-
 type TbMapRepository interface {
-	// TODO
+	GetTableByLocationId(LocationId int) (string, error)
 }

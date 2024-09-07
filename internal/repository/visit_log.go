@@ -14,7 +14,7 @@ type VisitLog struct {
 
 	UserId        int
 	LocationId    int
-	SubLocationId int
+	SubLocationId int 
 }
 
 type postgresVisitLogRepository struct {
