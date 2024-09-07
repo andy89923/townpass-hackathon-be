@@ -30,20 +30,12 @@ type postgresVisitLogRepository struct {
 	logger *zap.Logger
 }
 
-func NewPostgresVisitLogRepository(db *gorm.DB, logger *zap.Logger) domain.VisitLogRepository {
-	return &postgresVisitLogRepository{
-		db:     db,
-		logger: logger,
-	}
-}
-
-func (p *postgresVisitLogRepository) AddVisitLog(visitLog VisitLog) error {
 func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*domain.VisitLog, error ){
 	//TODO
 	visitLogModel := VisitLog{
 		UserId:        visitLog.UserId,
-		LocId:    visitLog.LocationId,
-		SubLocId: visitLog.SubLocationId,
+		LocId:    visitLog.LocId,
+		SubLocId: visitLog.SubLocId,
 	}
 
 	result := p.db.Create(&visitLogModel)
@@ -53,8 +45,8 @@ func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*dom
 
 	return &domain.VisitLog{
 		UserId:        visitLogModel.UserId,
-		LocationId:    visitLogModel.LocId,
-		SubLocationId: visitLogModel.SubLocId,
+		LocId:    visitLogModel.LocId,
+		SubLocId: visitLogModel.SubLocId,
 	}, nil
 }
 
