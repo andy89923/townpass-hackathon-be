@@ -26,7 +26,7 @@ func NewBadgeController(locationService *service.LocationService, logger *zap.Lo
 func (bc *LocationController) GetBadge(c *gin.Context) {
 	bc.logger.Info("enter controller")
 	mm, err := strconv.ParseUint(c.Param("mm"), 10, 32)
-	umm := uint32(mm)
+	umm := domain.MajorMinor(uint32(mm))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

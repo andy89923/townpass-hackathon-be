@@ -8,22 +8,32 @@ import (
 )
 
 type LocationService struct {
-	locationRepository domain.LocationRepository
-	logger             *zap.Logger
+	locationRepository   domain.LocationRepository
+	locListRepository    domain.LocListRepository
+	subLocListRepository domain.SubLocListRepository
+	visitLogRepository   domain.VisitLogRepository
+	logger               *zap.Logger
 }
 
-func NewBadgeService(locationRepository domain.LocationRepository, logger *zap.Logger) *LocationService {
+func NewBadgeService(locationRepository domain.LocationRepository,
+	locListRepository domain.LocListRepository,
+	subLocListRepository domain.SubLocListRepository,
+	visitLogRepository domain.VisitLogRepository,
+	logger *zap.Logger) *LocationService {
 	return &LocationService{
-		locationRepository: locationRepository,
-		logger:             logger,
+		locationRepository:   locationRepository,
+		locListRepository:    locListRepository,
+		subLocListRepository: subLocListRepository,
+		visitLogRepository:   visitLogRepository,
+		logger:               logger,
 	}
 }
 
-func (s *LocationService) GetBadge(mm uint32, id int) (*domain.Location, error) {
+func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Location, error) {
 	s.logger.Debug("[Service] GetBadge")
 
 	resp := domain.Location{}
-	resp.MajorMinor = mm
+	resp.MajorMinor = domain.MajorMinor(mm)
 
 	// use MM to get locationId, sublocationId
 	locationId, sublocationId, err := s.locationRepository.GetLocationByMM(mm)
@@ -32,21 +42,21 @@ func (s *LocationService) GetBadge(mm uint32, id int) (*domain.Location, error) 
 		return nil, fmt.Errorf("[Service] GetBadge GetLocationByMM error: %v", err)
 	}
 
-	resp.LocationName, err = s.locationRepository.GetNameByLocation(locationId)
+	resp.LocationName, err = s.locListRepository.GetNameByLocation(locationId)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge GetNameByLocation error")
 		return nil, fmt.Errorf("[Service] GetBadge GetNameByLocation error: %v", err)
 	}
 
 	// record current sublocation to visit_log
-	err = s.locationRepository.AddVisitLog(mm, locationId, sublocationId)
+	err = s.visitLogRepository.AddVisitLog(mm, id, locationId, sublocationId)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge AddVisitLog error")
 		return nil, fmt.Errorf("[Service] GetBadge AddVisitLog error: %v", err)
 	}
 
 	// get all sublocation info by locationId
-	subBadgesFromDB, err := getSubLocListByLocId(locationId)
+	subBadgesFromDB, err := s.locationRepository.getSubLocListByLocId(locationId)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge getSubLocListByLocId error")
 		return nil, fmt.Errorf("[Service] GetBadge getSubLocListByLocId error: %v", err)
