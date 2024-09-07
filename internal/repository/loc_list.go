@@ -61,8 +61,14 @@ func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (ba
 	}
 
 	return domain.Badge{
-		IconPath:    fmt.Sprint(locationId) + "_0", //TODO
-		Description: "",                            //TODO
+		IconPath:    fmt.Sprint(locationId) + "_0", 
+		Description: domain.TempleDescription{
+			MainDeity:    temple.MainDeity,
+			History:      temple.History,
+			WorshipOrder: temple.WorshipOrder,
+			InCharge:     temple.InCharge,
+			LinkRef:      temple.LinkRef,
+		},
 	}, nil
 }
 

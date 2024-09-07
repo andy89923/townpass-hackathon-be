@@ -17,13 +17,28 @@ type Location struct {
 type Badge struct {
 	IconPath    string `json:"icon_path" form:"icon_path"`
 	Aquired     bool   `json:"aquired" form:"aquired"`
-	Description string `json:"description" form:"description"`
+	Description TempleDescription `json:"description" form:"description"`
 }
 
 type SubBadge struct {
 	Badge
 	SubId int `json:"sub_id" form:"sub_id"`
+	subDescription SubTempleDescription
 }
+
+type TempleDescription struct {
+	MainDeity    string
+	History      string
+	WorshipOrder string
+	InCharge     string
+	LinkRef      string
+}
+
+type SubTempleDescription struct {
+	Deity string
+	Description string
+}
+
 
 type LocationRepository interface {
 	//TODO
