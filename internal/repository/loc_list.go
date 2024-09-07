@@ -1,7 +1,7 @@
 package repository
 
 import (
-	// "errors"
+	"errors"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -9,33 +9,48 @@ import (
 	"go.uber.org/zap"
 )
 
-type LocList struct {
-	templeId 		int 	`gorm:"column:temple_id"`
-	templeName 		string  `gorm:"column:temple_name"`
-	loc				string	`gorm:"column:loc"`
-	mainDeity 		int		`gorm:"column:main_deity"`
-	history 		string	`gorm:"column:history"`
-	worshipOrder 	string	`gorm:"column:worship_order"`
-	inCharge 		string	`gorm:"column:in_charge"`
-	linkRef 		string	`gorm:"column:link_ref"`
-	numsOfSubId 	int		`gorm:"column:nums_of_sub_id"`
+type TempleLocList struct {
+	templeId     int    `gorm:"column:temple_id"`
+	templeName   string `gorm:"column:temple_name"`
+	loc          string `gorm:"column:loc"`
+	mainDeity    int    `gorm:"column:main_deity"`
+	history      string `gorm:"column:history"`
+	worshipOrder string `gorm:"column:worship_order"`
+	inCharge     string `gorm:"column:in_charge"`
+	linkRef      string `gorm:"column:link_ref"`
+	numsOfSubId  int    `gorm:"column:nums_of_sub_id"`
 }
 
+func (l *TempleLocList) TableName() string {
+	return "m_m_list"
+}
+//------------------------------------------------
+
 type postgresLocListRepository struct {
-	db *gorm.DB
+	db     *gorm.DB
 	logger *zap.Logger
 }
 
-
-func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocationRepository {
+func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocListRepository {
 	return &postgresLocListRepository{
-		db: db,
+		db:     db,
 		logger: logger,
 	}
 }
 
-func (r *postgresLostItemRepository) GetNumOfSubLocByLocId(locId int) int {
-	var templeList []LocList
+func (r *postgresLocListRepository) GetNameByLocation(locationId int) (name string, err error) {
+	var temple TempleLocList
+
+	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return "", domain.ErrNotFound
+	}
+
+	return temple.templeName, nil
+}
+
+func (r *postgresLocListRepository) GetNumOfSubLocByLocId(locId int) int {
+	var templeList []TempleLocList
 	r.db.Find(&templeList)
 	for _, subLoc := range templeList {
 		if subLoc.templeId == locId {
@@ -43,4 +58,30 @@ func (r *postgresLostItemRepository) GetNumOfSubLocByLocId(locId int) int {
 		}
 	}
 	return -1
+}
+
+func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
+	var temple TempleLocList
+
+	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+
+	return domain.Badge{
+		IconPath:    "", //TODO
+		Description: "", //TODO
+	}, nil
+}
+
+// get the quantity of sublocations in a location
+func (r *postgresLocListRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
+	//TODO
+	var count int64
+	err = r.db.Model(&TempleLocList{}).Where("temple_id = ?", 1).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+
 }

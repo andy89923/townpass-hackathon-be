@@ -5,3 +5,7 @@ type VisitLog struct {
 	LocationId int
 	SubLocationId int
 }
+
+type VisitLogRepository interface {
+	//TODO
+}
