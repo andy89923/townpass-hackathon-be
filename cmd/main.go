@@ -43,9 +43,12 @@ func main() {
 	db := repository.ConnTotDB(logger)
 
 	locationRepository := repository.NewPostgresLocationRepository(db, logger)
-	locationService := service.NewBadgeService(locationRepository, nil, nil, logger)
-	// locListRepository := repository.NewPostgresLocListRepository(db, logger)
-	// subLocListRepository := repository.NewPostgresSubLocListRepository(db, logger)
+	locListRepository := repository.NewPostgresLocListRepository(db, logger)
+	subLocListRepository := repository.NewPostgresSubLocListRepository(db, logger)
+	visitLogRepository := repository.NewPostgresVisitLogRepository(db, logger)
+	tbMapRepository := repository.NewPostgresTbMapRepository(db, logger)
+	locationService := service.NewBadgeService(locationRepository,
+		locListRepository, subLocListRepository, visitLogRepository, tbMapRepository, logger)
 
 	services := service.AppService{
 		LocationService: locationService,
