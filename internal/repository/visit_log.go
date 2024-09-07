@@ -2,6 +2,7 @@ package repository
 
 import (
 	// "errors"
+	"errors"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -12,9 +13,9 @@ import (
 type VisitLog struct {
 	gorm.Model
 
-	UserId        int
-	LocationId    int
-	SubLocationId int 
+	UserId   int
+	LocId    int
+	SubLocId int
 }
 
 type postgresVisitLogRepository struct {
@@ -32,14 +33,16 @@ func (p *postgresVisitLogRepository) IsEventExist(userId int, locationId int) (b
 	return false, nil
 }
 
-func (r *postgresVisitLogRepository) GetVisitedSubLocIdsByUserLocInfo(userId int, locationId int) []int {
+func (r *postgresVisitLogRepository) GetVisitedSubLocIdsByUserLocInfo(userId int, locationId int) (visitedList []int, err error) {
 	var visitLogList []VisitLog
 	var visitedSubLocIds []int
-	r.db.Find(&visitLogList)
-	for _, visitLog := range visitLogList {
-		if visitLog.UserId == userId && visitLog.LocationId == locationId {
-			visitedSubLocIds = append(visitedSubLocIds, visitLog.SubLocationId)
-		}
+	result := r.db.Where("user_id = ? AND loc_id = ?", userId, locationId).Find(&visitLogList)
+	err = result.Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, domain.ErrNotFound
 	}
-	return visitedSubLocIds
+	for _, visitLog := range visitLogList {
+		visitedSubLocIds = append(visitedSubLocIds, visitLog.SubLocId)
+	}
+	return visitedSubLocIds, nil
 }

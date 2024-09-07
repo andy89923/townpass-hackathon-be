@@ -2,6 +2,7 @@ package repository
 
 import (
 	// "errors"
+	"fmt"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -46,7 +47,7 @@ func (r *postgresSubLocListRepository) GetSubLoc(locId int) ([]domain.SubBadge, 
 		subBadges = append(subBadges, domain.SubBadge{
 			SubId: sub.SubTempleId,
 			Badge: domain.Badge{
-				IconPath: "", //TODO
+				IconPath: fmt.Sprint(locId) + fmt.Sprint(sub.SubTempleId), //TODO
 				Description: "", //TODO
 			},
 		})
