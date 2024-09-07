@@ -41,7 +41,7 @@ func initLogger() *zap.Logger {
 
 
 func main() {
-	config.ReadConfig( "")
+	config.ReadConfig( "../config/config.yaml")
 	logger := initLogger()
 
 	//initialize database

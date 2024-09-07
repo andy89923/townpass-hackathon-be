@@ -36,13 +36,15 @@ func ReadConfig(path string) {
 	viper.AutomaticEnv()
 
 	if path != "" {
+		fmt.Println("[Config] set config file path: ", path)
 		viper.SetConfigFile(path)
 	}
 
+	
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Println("[Config] Config file not found. Reading from environment variables.")
+			fmt.Println("[Config] Config file not found. config path: ", viper.ConfigFileUsed())	
 		} else {
 			fmt.Println("[Config] Error reading config file", "err", err)
 			panic(err)
