@@ -167,7 +167,7 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		location.Details = struct {
 			Event domain.ArtEvent `json:"event" form:"event"`
 		}{
-			Event: event,
+			Event: *event,
 		}
 
 		return &location, nil

@@ -16,5 +16,5 @@ type ArtEvent struct {
 }
 
 type ArtEventRepository interface {
-	GetEventByMM(mm MajorMinor) (event ArtEvent, err error)
+	GetEventByMM(mm MajorMinor) (event *ArtEvent, err error)
 }
