@@ -38,7 +38,7 @@ func NewPostgresLocListRepository(db *gorm.DB, logger *zap.Logger) domain.LocLis
 	}
 }
 
-func (r *postgresLocationRepository) GetNameByLocation(locationId int) (name string, err error) {
+func (r *postgresLocListRepository) GetNameByLocation(locationId int) (name string, err error) {
 	var temple TempleLocList
 
 	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
@@ -49,7 +49,7 @@ func (r *postgresLocationRepository) GetNameByLocation(locationId int) (name str
 	return temple.templeName, nil
 }
 
-func (r *postgresLostItemRepository) GetNumOfSubLocByLocId(locId int) int {
+func (r *postgresLocListRepository) GetNumOfSubLocByLocId(locId int) int {
 	var templeList []TempleLocList
 	r.db.Find(&templeList)
 	for _, subLoc := range templeList {
@@ -60,7 +60,7 @@ func (r *postgresLostItemRepository) GetNumOfSubLocByLocId(locId int) int {
 	return -1
 }
 
-func (r *postgresLocationRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
+func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
 	var temple TempleLocList
 
 	err = r.db.Where(&TempleLocList{templeId: locationId}).Find(&temple).Error
@@ -75,7 +75,7 @@ func (r *postgresLocationRepository) GetMainBadgeByLocationId(locationId int) (b
 }
 
 // get the quantity of sublocations in a location
-func (r *postgresLocationRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
+func (r *postgresLocListRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
 	//TODO
 	var count int64
 	err = r.db.Model(&TempleLocList{}).Where("temple_id = ?", 1).Count(&count).Error
