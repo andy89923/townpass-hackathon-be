@@ -29,4 +29,5 @@ func ConnTotDB(logger *zap.Logger) (*gorm.DB) {
 	logger.Info("Database schema migrated successfully")
 
 	return db
+	
 }

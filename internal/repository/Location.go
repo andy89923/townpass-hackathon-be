@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"errors"
+	// "errors"
 	"go-cleanarch/pkg/domain"
 
 	"gorm.io/gorm"
@@ -40,4 +40,5 @@ func (r *postgresBadgeRepository) QueryLocationByMM(mm domain.MajorMinor) (strin
 	// 	return "", err // other error occurred
 	// }
 	// return location.Name, nil
+	return "", nil
 }
