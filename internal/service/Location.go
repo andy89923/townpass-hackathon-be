@@ -1,52 +1,62 @@
 package service
 
 import (
+	"fmt"
 	"go-cleanarch/pkg/domain"
 
 	"go.uber.org/zap"
 )
 
-type BadgeService struct {
-	badgeRepository domain.BadgeRepository
-	logger          *zap.Logger
+type LocationService struct {
+	locationRepository domain.LocationRepository
+	logger             *zap.Logger
 }
 
-func NewBadgeService(badgeRepository domain.BadgeRepository, logger *zap.Logger) *BadgeService {
-	return &BadgeService{
-		badgeRepository: badgeRepository,
-		logger:          logger,
+func NewBadgeService(locationRepository domain.LocationRepository, logger *zap.Logger) *LocationService {
+	return &LocationService{
+		locationRepository: locationRepository,
+		logger:             logger,
 	}
 }
 
-func (s *BadgeService) GetBadge(mm uint32, id int) (*domain.LostItem, error) {
+func (s *LocationService) GetBadge(mm uint32, id int) (*domain.Location, error) {
 	s.logger.Debug("[Service] GetBadge")
 
-	var resp *domain.Location
+	resp := domain.Location{}
 	resp.MajorMinor = mm
 
 	// use MM to get locationId, sublocationId
-	locationId, sublocationId, err := s.badgeRepository.GetLocationByMM(mm)
+	locationId, sublocationId, err := s.locationRepository.GetLocationByMM(mm)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge GetLocationByMM error")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return nil, fmt.Errorf("[Service] GetBadge GetLocationByMM error: %v", err)
 	}
 
-	resp.LocationName, err = s.badgeRepository.GetNameByLocation(locationId)
+	resp.LocationName, err = s.locationRepository.GetNameByLocation(locationId)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge GetNameByLocation error")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return nil, fmt.Errorf("[Service] GetBadge GetNameByLocation error: %v", err)
 	}
 
 	// record current sublocation to visit_log
-	s.badgeRepository.AddVisitLog(mm, locationId, sublocationId)
-	// get all sublocation info by locationId
-	subBadgesFromDB := getSubLocListByLocId(locationId)
+	err = s.locationRepository.AddVisitLog(mm, locationId, sublocationId)
+	if err != nil {
+		s.logger.Debug("[Service] GetBadge AddVisitLog error")
+		return nil, fmt.Errorf("[Service] GetBadge AddVisitLog error: %v", err)
+	}
 
+	// get all sublocation info by locationId
+	subBadgesFromDB, err := getSubLocListByLocId(locationId)
+	if err != nil {
+		s.logger.Debug("[Service] GetBadge getSubLocListByLocId error")
+		return nil, fmt.Errorf("[Service] GetBadge getSubLocListByLocId error: %v", err)
+	}
 	// get user's visited record
-	visitList := s.badgeRepository.GetVisitedSubLocIdsByUserLocInfo(id, locationId)
-	
+	visitList, err := s.locationRepository.GetVisitedSubLocIdsByUserLocInfo(id, locationId)
+	if err != nil {
+		s.logger.Debug("[Service] GetBadge GetVisitedSubLocIdsByUserLocInfo error")
+		return nil, fmt.Errorf("[Service] GetBadge GetVisitedSubLocIdsByUserLocInfo error: %v", err)
+	}
 	// compare sublocation info with user's visited record
 	visitedMap := make(map[int]bool)
 	for _, visit := range visitList {
@@ -55,12 +65,12 @@ func (s *BadgeService) GetBadge(mm uint32, id int) (*domain.LostItem, error) {
 
 	var respSubBadges []domain.SubBadge
 	countProgress := 0
-	for _, subBadge := range subBadges {
-		var badge domain.Badge{
+	for _, subBadge := range subBadgesFromDB {
+		badge := domain.Badge{
 			IconPath:    subBadge.IconPath,
 			Description: subBadge.Description,
 		}
-		
+
 		if visitedMap[subBadge.SubId] {
 			badge.Aquired = true
 			countProgress++
@@ -68,35 +78,40 @@ func (s *BadgeService) GetBadge(mm uint32, id int) (*domain.LostItem, error) {
 			badge.Aquired = false
 		}
 
-		var subBadgeTmp domain.SubBadge{
-			Badge:		badge,
-			SubId:      subBadge.SubId,
+		subBadgeTmp := domain.SubBadge{
+			Badge: badge,
+			SubId: subBadge.SubId,
 		}
 
 		respSubBadges = append(respSubBadges, subBadgeTmp)
 	}
 
-	resp.SubBadges = respSubBadges
+	resp.SubBadge = respSubBadges
+
 	resp.Progress = countProgress
-	resp.TotalProgress = s.badgeRepository.GetNumOfSubLocByLocId(locationId)
-	
+	resp.TotalProgress, err = s.locationRepository.GetNumOfSubLocByLocId(locationId)
+	if err != nil {
+		s.logger.Debug("[Service] GetBadge GetNumOfSubLocByLocId error")
+		return nil, fmt.Errorf("[Service] GetBadge GetNumOfSubLocByLocId error: %v", err)
+	}
+
 	// get main badge info by locationId
-	mainBadgeDB, err = s.badgeRepository.GetMainBadgeByLocationId(locationId)
+	mainBadgeDB, err := s.locationRepository.GetMainBadgeByLocationId(locationId)
 	if err != nil {
 		s.logger.Debug("[Service] GetBadge GetMainBadgeByLocationId error")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return nil, fmt.Errorf("[Service] GetBadge GetMainBadgeByLocationId error: %v", err)
 	}
-	var mainBadge domain.Badge{
+
+	mainBadge := domain.Badge{
 		IconPath:    mainBadgeDB.IconPath,
 		Description: mainBadgeDB.Description,
 	}
 	if resp.Progress == resp.TotalProgress {
-		mainBadge.Acquired = true
-	}else{
-		mainBadge.Acquired = false
+		mainBadge.Aquired = true
+	} else {
+		mainBadge.Aquired = false
 	}
 	resp.MainBadge = mainBadge
-	
-	return resp, nil
+
+	return &resp, nil
 }
