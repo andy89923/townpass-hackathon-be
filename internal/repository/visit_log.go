@@ -17,19 +17,36 @@ type VisitLog struct {
 	SubLocationId int
 }
 
+func NewPostfresqlVisitLogRepository(db *gorm.DB, logger *zap.Logger) domain.VisitLogRepository {
+	return &postgresVisitLogRepository{
+		db:     db,
+		logger: logger,
+	}
+}
+
 type postgresVisitLogRepository struct {
 	db     *gorm.DB
 	logger *zap.Logger
 }
 
-func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) error {
+func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*domain.VisitLog, error ){
 	//TODO
-	return nil
-}
+	visitLogModel := VisitLog{
+		UserId:        visitLog.UserId,
+		LocationId:    visitLog.LocationId,
+		SubLocationId: visitLog.SubLocationId,
+	}
 
-func (p *postgresVisitLogRepository) IsEventExist(userId int, locationId int) (bool, error) {
-	//TODO
-	return false, nil
+	result := p.db.Create(&visitLogModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &domain.VisitLog{
+		UserId:        visitLogModel.UserId,
+		LocationId:    visitLogModel.LocationId,
+		SubLocationId: visitLogModel.SubLocationId,
+	}, nil
 }
 
 func (r *postgresVisitLogRepository) GetVisitedSubLocIdsByUserLocInfo(userId int, locationId int) []int {

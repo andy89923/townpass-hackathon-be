@@ -8,4 +8,6 @@ type VisitLog struct {
 
 type VisitLogRepository interface {
 	//TODO
+	AddVisitLog(visitLog VisitLog) (*VisitLog, error )
+	GetVisitedSubLocIdsByUserLocInfo(userId int, locationId int) []int
 }
