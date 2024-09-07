@@ -64,24 +64,3 @@ func (r *postgresLocationRepository) Create(location *domain.Location, locationI
 	return nil
 }
 
-func (r *postgresLocationRepository) GetNameByLocation(locationId int) (name string, err error) {
-	//TODO
-	
-	return "", nil
-}
-
-func (r *postgresLocationRepository) Create(location *domain.Location, locationId int, subLocationId int) error {
-	locationModel := LocationTable{
-		MM: location.MajorMinor,
-		location: locationId,
-		subLocation: subLocationId,
-	}
-
-
-	result := r.db.Create(&locationModel)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
-}
