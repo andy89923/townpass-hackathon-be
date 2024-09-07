@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"go-cleanarch/pkg/domain"
 
 	"go.uber.org/zap"
@@ -9,7 +10,7 @@ import (
 )
 
 type ArtEvent struct {
-	EventId     int
+	EventId     int `gorm:"primaryKey"`
 	EventName   string
 	Description string
 	placeId     int
@@ -20,7 +21,7 @@ func (l *ArtEvent) TableName() string {
 }
 
 type ArtSubEvent struct {
-	SubeventId  int
+	SubeventId  int `gorm:"primaryKey"`
 	EventId     int
 	Name        string
 	Description string
@@ -42,20 +43,21 @@ func NewPostgresArtEventListRepository(db *gorm.DB, logger *zap.Logger) domain.A
 	}
 }
 
-func (r *postgresArtEventListRepository) GetEventByMM(mm domain.MajorMinor) (event *domain.ArtEvent, err error) {
-	// TODO: get event and all the related subevents
-
-	var subevents []ArtSubEvent
-	result := r.db.Where(&ArtSubEvent{SubeventId: int(mm)}).Find(&subevents)
+func (r *postgresArtEventListRepository) GetEventBySubeventId(id int) (event *domain.ArtEvent, err error) {
+	var subevent ArtSubEvent
+	result := r.db.Where(&ArtSubEvent{SubeventId: id}).First(&subevent)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, domain.ErrNotFound
 	}
 
-	if len(subevents) == 0 {
+	event = new(domain.ArtEvent)
+	result = r.db.Where(&ArtEvent{EventId: subevent.EventId}).First(event)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, domain.ErrNotFound
 	}
 
-	result = r.db.Where(&ArtEvent{EventId: subevents[0].EventId}).First(&event)
+	var subevents []ArtSubEvent
+	result = r.db.Where(&ArtSubEvent{EventId: subevent.EventId}).Find(&subevents)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, domain.ErrNotFound
 	}
@@ -68,6 +70,8 @@ func (r *postgresArtEventListRepository) GetEventByMM(mm domain.MajorMinor) (eve
 			Description: subevent.Description,
 		})
 	}
+
+	fmt.Printf("event: %+v\n", event)
 
 	return event, nil
 }

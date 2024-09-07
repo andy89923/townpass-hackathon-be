@@ -10,8 +10,8 @@ type Location struct {
 	Progress    int    `json:"progress" form:"progress"`
 	NumsOfSubId int    `json:"total" form:"total"`
 
-	MainBadge Badge      `json:"mainBadge" form:"main_badge"`
-	SubBadge  []SubBadge `json:"subBadges" form:"sub_badge"`
+	MainBadge *Badge      `json:"mainBadge" form:"main_badge"`
+	SubBadge  *[]SubBadge `json:"subBadges" form:"sub_badge"`
 
 	Details any `json:"info" form:"info"`
 }
@@ -24,7 +24,7 @@ type Badge struct {
 
 type SubBadge struct {
 	Badge
-	SubId int `json:"sub_id" form:"sub_id"`
+	SubId          int `json:"sub_id" form:"sub_id"`
 	SubDescription SubTempleDescription
 }
 

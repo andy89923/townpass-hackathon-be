@@ -33,6 +33,7 @@ func NewBadgeService(locationRepository domain.LocationRepository,
 		visitLogRepository:   visitLogRepository,
 		tbMapRepository:      tbMapRepository,
 		artLocListRepository: artLocListRepository,
+		artEventRepository:   artEventRepository,
 		logger:               logger,
 	}
 }
@@ -124,7 +125,8 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 			respSubBadges = append(respSubBadges, subBadgeTmp)
 		}
 
-		resp.SubBadge = respSubBadges
+		resp.SubBadge = new([]domain.SubBadge)
+		*resp.SubBadge = respSubBadges
 
 		resp.Progress = countProgress
 		resp.NumsOfSubId, err = s.locListRepository.GetSubLocQuantity(locationId)
@@ -150,12 +152,14 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		} else {
 			mainBadge.Aquired = false
 		}
-		resp.MainBadge = mainBadge
+		resp.MainBadge = new(domain.Badge)
+		*resp.MainBadge = mainBadge
 	} else if tableName == TBMAP_ART {
-		event, err := s.artEventRepository.GetEventByMM(mm)
+		fmt.Printf("s: %+v\n", s)
+		fmt.Printf("sublocationId: %d\n", sublocationId)
+		event, err := s.artEventRepository.GetEventBySubeventId(sublocationId)
 		if err != nil {
-			s.logger.Debug("[Service] GetBadge GetEventByMM error")
-			return nil, fmt.Errorf("[Service] GetBadge GetEventByMM error: %v", err)
+			return nil, fmt.Errorf("[Service] GetBadge GetEventBySubeventId error: %v", err)
 		}
 
 		location, err := s.artLocListRepository.GetLocationByPlaceId(event.PlaceId)
@@ -170,7 +174,10 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 			Event: *event,
 		}
 
-		return &location, nil
+		location.MajorMinor = domain.MajorMinor(mm)
+		location.UserId = id
+
+		return location, nil
 	}
 
 	return &resp, nil
