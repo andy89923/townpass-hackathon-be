@@ -1,5 +1,6 @@
 package domain
 
+type MajorMinor uint32
 
 type Location struct {
 	MajorMinor uint32 // MajorMinor is a type for major and minor ，which are 4 bytes 
@@ -22,6 +23,10 @@ type Badge struct {
 type SubBadge struct {
 	Badge 
 	SubId int `json:"sub_id" form:"sub_id"`
+}
+
+type LocationRepository interface {
+ //TODO
 }
 
 

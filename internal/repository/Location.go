@@ -18,27 +18,35 @@ type LocationTable struct {
 	subLocation uint8
 }
 
-type postgresBadgeRepository struct {
+type postgresLocationRepository struct {
 	db *gorm.DB
 	logger *zap.Logger
 }
 
-func NewPostgresBadgeRepository(db *gorm.DB, logger *zap.Logger) domain.LostItemRepository {
-	return &postgresLostItemRepository{
+func NewPostgresBadgeRepository(db *gorm.DB, logger *zap.Logger) domain.LocationRepository {
+	return &postgresLocationRepository{
 		db: db,
 		logger: logger,
 	}
 }
 
-func (r *postgresBadgeRepository) QueryLocationByMM(mm domain.MajorMinor) (string, error) {
-	// var location LocationTable
-	// err := r.db.Where("mm = ?", mm).First(&location).Error
-	// if err != nil {
-	// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-	// 		return "", nil // record not found
-	// 	}
-	// 	return "", err // other error occurred
-	// }
-	// return location.Name, nil
+func (r *postgresLocationRepository) GetLocationByMM(mm domain.MajorMinor) (locationId int, subLocationId int, err error) {
+	//TODO
+	return 0,0, nil
+}
+
+func (r *postgresLocationRepository) GetNameByLocation(locationId int) (name string, err error) {
+	//TODO
+	
 	return "", nil
+}
+
+func (r *postgresLocationRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
+	//TODO
+	return domain.Badge{}, nil
+}
+
+func (r *postgresLocationRepository) GetSubLocQuantity(locationId int) (quantity int, err error) {
+	//TODO
+	return 0, nil
 }
