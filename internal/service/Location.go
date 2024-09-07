@@ -67,7 +67,7 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		}
 
 		// get all sublocation info by locationId
-		subBadgesFromDB, err := s.subLocListRepository.getSubLocListByLocId(locationId)
+		subBadgesFromDB, err := s.subLocListRepository.GetSubLocListByLocId(locationId)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge getSubLocListByLocId error")
 			return nil, fmt.Errorf("[Service] GetBadge getSubLocListByLocId error: %v", err)
@@ -110,14 +110,14 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		resp.SubBadge = respSubBadges
 
 		resp.Progress = countProgress
-		resp.TotalProgress, err = s.locationRepository.GetNumOfSubLocByLocId(locationId)
+		resp.TotalProgress, err = s.locListRepository.GetSubLocQuantity(locationId)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge GetNumOfSubLocByLocId error")
 			return nil, fmt.Errorf("[Service] GetBadge GetNumOfSubLocByLocId error: %v", err)
 		}
 
 		// get main badge info by locationId
-		mainBadgeDB, err := s.locationRepository.GetMainBadgeByLocationId(locationId)
+		mainBadgeDB, err := s.locListRepository.GetMainBadgeByLocationId(locationId)
 		if err != nil {
 			s.logger.Debug("[Service] GetBadge GetMainBadgeByLocationId error")
 			return nil, fmt.Errorf("[Service] GetBadge GetMainBadgeByLocationId error: %v", err)

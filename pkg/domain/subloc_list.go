@@ -4,8 +4,6 @@ package domain
 // "gorm.io/gorm"
 // "go.uber.org/zap"
 
-
-
 type SubLocListRepository interface {
-	// TODO
+	GetSubLocListByLocId(locId int) ([]SubBadge, error)
 }

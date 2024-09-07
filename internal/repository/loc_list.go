@@ -49,17 +49,6 @@ func (r *postgresLocListRepository) GetNameByLocation(locationId int) (name stri
 	return temple.TempleName, nil
 }
 
-func (r *postgresLocListRepository) GetNumOfSubLocByLocId(locId int) int {
-	var templeList []TempleLocList
-	r.db.Find(&templeList)
-	for _, subLoc := range templeList {
-		if subLoc.TempleId == locId {
-			return subLoc.NumsOfSubId
-		}
-	}
-	return -1
-}
-
 func (r *postgresLocListRepository) GetMainBadgeByLocationId(locationId int) (badge domain.Badge, err error) {
 	var temple TempleLocList
 
