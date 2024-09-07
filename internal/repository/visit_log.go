@@ -18,7 +18,7 @@ type VisitLog struct {
 	SubLocId int
 }
 
-func NewPostfresqlVisitLogRepository(db *gorm.DB, logger *zap.Logger) domain.VisitLogRepository {
+func NewPostgresVisitLogRepository(db *gorm.DB, logger *zap.Logger) domain.VisitLogRepository {
 	return &postgresVisitLogRepository{
 		db:     db,
 		logger: logger,
@@ -34,8 +34,8 @@ func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*dom
 	//TODO
 	visitLogModel := VisitLog{
 		UserId:        visitLog.UserId,
-		LocationId:    visitLog.LocationId,
-		SubLocationId: visitLog.SubLocationId,
+		LocId:    visitLog.LocationId,
+		SubLocId: visitLog.SubLocationId,
 	}
 
 	result := p.db.Create(&visitLogModel)
@@ -45,8 +45,8 @@ func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*dom
 
 	return &domain.VisitLog{
 		UserId:        visitLogModel.UserId,
-		LocationId:    visitLogModel.LocationId,
-		SubLocationId: visitLogModel.SubLocationId,
+		LocationId:    visitLogModel.LocId,
+		SubLocationId: visitLogModel.SubLocId,
 	}, nil
 }
 
