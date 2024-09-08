@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"go-cleanarch/pkg/domain"
@@ -13,7 +14,7 @@ type ArtEvent struct {
 	EventId     int `gorm:"primaryKey"`
 	EventName   string
 	Description string
-	placeId     int
+	PlaceId     int
 }
 
 func (l *ArtEvent) TableName() string {
@@ -22,7 +23,7 @@ func (l *ArtEvent) TableName() string {
 
 type ArtSubEvent struct {
 	SubeventId  int `gorm:"primaryKey"`
-	EventId     int
+	EventId     int `gorm:"foreignKey:EventId"`
 	Name        string
 	Description string
 }
@@ -51,10 +52,23 @@ func (r *postgresArtEventListRepository) GetEventBySubeventId(id int) (event *do
 	}
 
 	event = new(domain.ArtEvent)
-	result = r.db.Where(&ArtEvent{EventId: subevent.EventId}).First(event)
+	eventModel := ArtEvent{}
+	result = r.db.Where(&ArtEvent{EventId: subevent.EventId}).First(&eventModel)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, domain.ErrNotFound
 	}
+
+	jsonTemp, err := json.Marshal(eventModel)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(jsonTemp, event)
+	if err != nil {
+		return nil, err
+	}
+
+	event.EventName = eventModel.EventName
 
 	var subevents []ArtSubEvent
 	result = r.db.Where(&ArtSubEvent{EventId: subevent.EventId}).Find(&subevents)
@@ -71,6 +85,7 @@ func (r *postgresArtEventListRepository) GetEventBySubeventId(id int) (event *do
 		})
 	}
 
+	fmt.Printf("event id: %d\n", subevent.EventId)
 	fmt.Printf("event: %+v\n", event)
 
 	return event, nil
