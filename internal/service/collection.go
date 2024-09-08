@@ -2,17 +2,20 @@ package service
 
 import (
 	"fmt"
-	"strconv"
 	"go-cleanarch/pkg/domain"
+	"strconv"
+
+	"go.uber.org/zap"
 )
 
 type CollectionService struct {
-	locListRepository    domain.LocListRepository
-	visitLogRepository   domain.VisitLogRepository
+	locListRepository  domain.LocListRepository
+	visitLogRepository domain.VisitLogRepository
 }
 
 func NewCollectionService(locListRepository domain.LocListRepository,
-	visitLogRepository domain.VisitLogRepository) *CollectionService {
+	visitLogRepository domain.VisitLogRepository,
+	logger *zap.Logger) *CollectionService {
 	return &CollectionService{
 		locListRepository:  locListRepository,
 		visitLogRepository: visitLogRepository,
@@ -33,7 +36,7 @@ func (s *CollectionService) GetCollections(userId int) ([]domain.Collection, err
 		}
 
 		collections = append(collections, domain.Collection{
-			IconPath:    strconv.Itoa(locId) + "_0",
+			IconPath:     strconv.Itoa(locId) + "_0",
 			LocationName: locName,
 		})
 	}
