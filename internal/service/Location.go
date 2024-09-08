@@ -65,7 +65,7 @@ func (s *LocationService) GetBadge(mm domain.MajorMinor, id int) (*domain.Locati
 		return nil, fmt.Errorf("[Service] Get Table Name By Location ID error: %v", err)
 	}
 
-	if tableName == "temple" {
+	if tableName == TBMAP_TEMPLE {
 		resp.Name, err = s.locListRepository.GetNameByLocation(locationId)
 		fmt.Println("resp.LocationName: ", resp.Name)
 		if err != nil {
