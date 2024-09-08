@@ -25,5 +25,8 @@ func NewRouter(logger *zap.Logger, services service.AppService) *gin.Engine {
 	// addLostItemGroup(router, logger, lostItemController)
 	locationController := controller.NewBadgeController(services.LocationService, logger)
 	addBadgeGroup(router, logger, locationController)
+
+	collectionController := controller.NewCollectionController(services.CollectionService, logger)
+	addCollectionGroup(router, logger, collectionController)
 	return router
 }

@@ -53,8 +53,10 @@ func main() {
 	locationService := service.NewBadgeService(locationRepository,
 		locListRepository, subLocListRepository, visitLogRepository, tbMapRepository, artLocListRepository, artEventRepository, logger)
 
+	collectionService := service.NewCollectionService(locListRepository, visitLogRepository, logger)
 	services := service.AppService{
-		LocationService: locationService,
+		LocationService:   locationService,
+		CollectionService: collectionService,
 	}
 
 	port := ":" + strconv.Itoa(config.GetConfig().Server.Port)
