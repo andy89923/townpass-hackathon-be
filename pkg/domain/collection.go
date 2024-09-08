@@ -1,6 +1,6 @@
 package domain
 
 type Collection struct {
-	UserId int
+	IconPath string
 	LocationName string
 }

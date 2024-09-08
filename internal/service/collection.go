@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 	"go-cleanarch/pkg/domain"
 )
 
@@ -32,11 +33,10 @@ func (s *CollectionService) GetCollections(userId int) ([]domain.Collection, err
 		}
 
 		collections = append(collections, domain.Collection{
-			UserId:       userId,
+			IconPath:    strconv.Itoa(locId) + "_0",
 			LocationName: locName,
 		})
 	}
 
 	return collections, nil
-
 }
