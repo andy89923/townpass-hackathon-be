@@ -54,6 +54,24 @@ func (p *postgresVisitLogRepository) AddVisitLog(visitLog domain.VisitLog) (*dom
 	}, nil
 }
 
+func (r *postgresVisitLogRepository) GetVisitedLocIdsByUserId(userId int) (visitedList []int, err error) {
+	var visitLogList []VisitLog
+	var visitedLocIds []int
+	m := make(map[int]bool)
+	result := r.db.Where("user_id = ?", userId).Find(&visitLogList)
+	err = result.Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, domain.ErrNotFound
+	}
+	for _, visitLog := range visitLogList {
+		m[visitLog.LocId] = true
+	}
+	for k, _ := range m {
+		visitedLocIds = append(visitedLocIds, k)
+	}
+	return visitedLocIds, nil
+}
+
 func (r *postgresVisitLogRepository) GetVisitedSubLocIdsByUserLocInfo(userId int, locationId int) (visitedList []int, err error) {
 	var visitLogList []VisitLog
 	var visitedSubLocIds []int
